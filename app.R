@@ -49,6 +49,7 @@ ui <- fluidPage(
       numericInput("ngrains","Number of grains",value=0),
       numericInput("Threshold", "Discordance threshold (%)\n(Current value plots all grains)", value = 1000),
       numericInput("n_modes", "Number of labelled modes for KDE", value = 5),
+      numericInput("w_bins", "Width of bins for histogram on KDE", value = 50),
       numericInput("pdf_w", "PDF Width", value = 14),
       numericInput("pdf_h", "PDF Height", value = 9.5),
       downloadButton("download_csv", "Download Edited CSV"),
@@ -182,6 +183,9 @@ server <- function(input, output) {
       p$data,
       xlim = c(p$xmin, p$xmax),
       ylim = c(p$ymin, p$ymax),
+      cutoff.disc = discfilter(
+        option="r",before=TRUE,cutoff = c(-input$Threshold,input$Threshold)
+      ),
       type = 2,
       levels = plot_levels,
       ellipse.fill = current_palette,
@@ -252,7 +256,7 @@ server <- function(input, output) {
         option="r",before=TRUE,cutoff=c(-input$Threshold,input$Threshold)),
       xlab = "Age (Ma)",
       ylab = "Number of analyses",
-      binwidth = 50,
+      binwidth = input$w_bins,
       ann=FALSE,
       sigdig=3
     )
